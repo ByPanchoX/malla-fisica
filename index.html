@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular - Ingeniería Civil Física USM</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Organizador de Malla - Ingeniería Civil Física USM</h1>
+        <p>Tu progreso se guardará automáticamente en este navegador.</p>
+    </header>
+    
+    <main>
+        <section class="metricas">
+            <div class="tarjeta">
+                <h3>✅ Créditos Aprobados</h3>
+                <p id="total-creditos">0</p>
+            </div>
+        </section>
+
+        <section class="contenedor-principal">
+            <div class="columna">
+                <h2>Tu Malla</h2>
+                <div class="tabla-scroll">
+                    <table id="tabla-malla">
+                        <thead>
+                            <tr>
+                                <th>Estado</th>
+                                <th>Sigla</th>
+                                <th>Nombre</th>
+                                <th>Sem.</th>
+                                <th>Prerrequisitos</th>
+                                <th>Créditos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-malla">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="columna">
+                <h2>🚀 Disponibles Próximo Semestre</h2>
+                <div id="lista-disponibles" class="lista-ramos">
+                    </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
