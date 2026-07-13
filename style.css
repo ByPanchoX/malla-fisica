@@ -1,19 +1,31 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 body { background-color: #f4f7f6; color: #333; padding: 20px; }
-header { text-align: center; margin-bottom: 30px; }
-header h1 { color: #003057; /* Azul institucional */ }
-.metricas { display: flex; justify-content: center; margin-bottom: 20px; }
-.tarjeta { background: white; padding: 20px 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-.tarjeta h3 { font-size: 1.2rem; color: #555; }
-.tarjeta p { font-size: 2rem; font-weight: bold; color: #2ecc71; margin-top: 10px; }
-.contenedor-principal { display: flex; gap: 20px; flex-wrap: wrap; }
-.columna { flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-.columna h2 { color: #003057; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
-.tabla-scroll { overflow-x: auto; max-height: 60vh; overflow-y: auto; }
-table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; font-size: 0.9rem; }
-th { background-color: #003057; color: white; position: sticky; top: 0; }
-tr:hover { background-color: #f1f1f1; }
-input[type="checkbox"] { transform: scale(1.3); cursor: pointer; }
-.ramo-disponible { background: #e8f4f8; padding: 15px; margin-bottom: 10px; border-left: 5px solid #3498db; border-radius: 5px; }
-.ramo-disponible strong { color: #2980b9; }
+header { text-align: center; margin-bottom: 20px; }
+header h1 { color: #003057; }
+
+.metricas { display: flex; justify-content: center; margin-bottom: 30px; }
+.tarjeta { background: white; padding: 15px 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+.tarjeta h3 { font-size: 1.1rem; color: #555; }
+.tarjeta p { font-size: 1.8rem; font-weight: bold; color: #2ecc71; margin-top: 5px; }
+
+/* Cuadrícula de columnas por semestre */
+.malla-grid { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; align-items: flex-start; }
+.semestre-columna { flex: 0 0 180px; display: flex; flex-direction: column; gap: 12px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.semestre-titulo { text-align: center; color: #003057; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+
+/* Diseño de cada bloque de ramo */
+.ramo-card { border: 1px solid #ccc; border-radius: 8px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.2s ease; user-select: none; }
+.ramo-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+.ramo-sigla { font-weight: bold; font-size: 1rem; margin-bottom: 5px; }
+.ramo-nombre { font-size: 0.75rem; margin-bottom: 8px; line-height: 1.2; height: 3em; overflow: hidden; }
+.ramo-creditos { font-size: 0.7rem; font-weight: bold; }
+
+/* Estados visuales del ramo */
+.estado-aprobado { background-color: #2ecc71; color: white; border-color: #27ae60; }
+.estado-aprobado .ramo-creditos { color: #e8f8f5; }
+
+.estado-disponible { background-color: #e8f4f8; border-color: #3498db; border-left: 6px solid #3498db; }
+.estado-disponible .ramo-creditos { color: #2980b9; }
+
+.estado-bloqueado { background-color: #f9f9f9; color: #999; border-color: #eee; }
+.estado-bloqueado .ramo-creditos { color: #ccc; }
