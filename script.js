@@ -1,5 +1,4 @@
 let malla = [];
-// Usamos localStorage para guardar los ramos aprobados en el navegador
 let aprobados = JSON.parse(localStorage.getItem('malla-aprobados')) || [];
 
 // 1. Cargar el archivo CSV
@@ -16,69 +15,79 @@ fetch('malla.csv')
         });
     });
 
-// 2. Función principal para actualizar toda la página
-function actualizarInterfaz() {
-    const tbody = document.getElementById('cuerpo-malla');
-    const contenedorDisponibles = document.getElementById('lista-disponibles');
-    let creditosTotales = 0;
-    
-    tbody.innerHTML = '';
-    contenedorDisponibles.innerHTML = '';
-    
-    malla.forEach(ramo => {
-        const estaAprobado = aprobados.includes(ramo.Sigla);
-        
-        // Sumar créditos si está aprobado
-        if (estaAprobado && ramo.Creditos) {
-            creditosTotales += parseInt(ramo.Creditos);
-        }
-
-        // Llenar la tabla principal
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td style="text-align: center;">
-                <input type="checkbox" onchange="alternarAprobacion('${ramo.Sigla}', this.checked)" ${estaAprobado ? 'checked' : ''}>
-            </td>
-            <td><strong>${ramo.Sigla}</strong></td>
-            <td>${ramo.Nombre}</td>
-            <td>${ramo.Semestre_Ideal}</td>
-            <td>${ramo.Prerrequisitos || '-'}</td>
-            <td>${ramo.Creditos || 0}</td>
-        `;
-        tbody.appendChild(tr);
-
-        // Lógica de prerrequisitos para los disponibles
-        if (!estaAprobado) {
-            let requisitosCumplidos = true;
-            
-            if (ramo.Prerrequisitos) {
-                // Separar los requisitos por comas y limpiar espacios
-                const prereqs = ramo.Prerrequisitos.split(',').map(p => p.trim());
-                // Verificar si todos están en la lista de aprobados
-                requisitosCumplidos = prereqs.every(req => aprobados.includes(req));
-            }
-            
-            if (requisitosCumplidos) {
-                const div = document.createElement('div');
-                div.className = 'ramo-disponible';
-                div.innerHTML = `<strong>${ramo.Sigla}</strong> - ${ramo.Nombre} <br><small>Semestre: ${ramo.Semestre_Ideal} | Créditos: ${ramo.Creditos || 0}</small>`;
-                contenedorDisponibles.appendChild(div);
-            }
-        }
-    });
-
-    // Actualizar métrica
-    document.getElementById('total-creditos').innerText = creditosTotales;
-}
-
-// 3. Función al marcar o desmarcar un ramo
-function alternarAprobacion(sigla, isChecked) {
-    if (isChecked) {
-        if (!aprobados.includes(sigla)) aprobados.push(sigla);
+// 2. Función para procesar un clic en cualquier tarjeta
+function alternarAprobacion(sigla) {
+    if (aprobados.includes(sigla)) {
+        aprobados = aprobados.filter(s => s !== sigla); // Desmarcar
     } else {
-        aprobados = aprobados.filter(s => s !== sigla);
+        aprobados.push(sigla); // Marcar como aprobado
     }
-    // Guardar en el navegador y actualizar
     localStorage.setItem('malla-aprobados', JSON.stringify(aprobados));
     actualizarInterfaz();
+}
+
+// 3. Renderizar la cuadrícula visual
+function actualizarInterfaz() {
+    const grid = document.getElementById('malla-grid');
+    grid.innerHTML = '';
+    let creditosTotales = 0;
+
+    // Agrupar los ramos por la columna "Semestre_Ideal"
+    const semestres = {};
+    malla.forEach(ramo => {
+        const sem = ramo.Semestre_Ideal || 'Otros';
+        if (!semestres[sem]) semestres[sem] = [];
+        semestres[sem].push(ramo);
+    });
+
+    // Ordenar los semestres del 1 en adelante
+    const semestresOrdenados = Object.keys(semestres).sort((a, b) => parseInt(a) - parseInt(b));
+
+    // Construir la interfaz columna por columna
+    semestresOrdenados.forEach(sem => {
+        const columnaDiv = document.createElement('div');
+        columnaDiv.className = 'semestre-columna';
+        
+        const titulo = document.createElement('div');
+        titulo.className = 'semestre-titulo';
+        titulo.innerText = `Semestre ${sem}`;
+        columnaDiv.appendChild(titulo);
+
+        semestres[sem].forEach(ramo => {
+            const estaAprobado = aprobados.includes(ramo.Sigla);
+            
+            if (estaAprobado && ramo.Creditos) {
+                creditosTotales += parseInt(ramo.Creditos);
+            }
+
+            // Lógica de prerrequisitos
+            let requisitosCumplidos = true;
+            if (!estaAprobado && ramo.Prerrequisitos) {
+                const prereqs = ramo.Prerrequisitos.split(',').map(p => p.trim());
+                requisitosCumplidos = prereqs.every(req => aprobados.includes(req));
+            }
+
+            // Asignar estado CSS
+            let claseEstado = 'estado-bloqueado';
+            if (estaAprobado) claseEstado = 'estado-aprobado';
+            else if (requisitosCumplidos) claseEstado = 'estado-disponible';
+
+            // Crear la tarjeta del ramo
+            const card = document.createElement('div');
+            card.className = `ramo-card ${claseEstado}`;
+            card.onclick = () => alternarAprobacion(ramo.Sigla);
+
+            card.innerHTML = `
+                <div class="ramo-sigla">${ramo.Sigla}</div>
+                <div class="ramo-nombre">${ramo.Nombre}</div>
+                <div class="ramo-creditos">${ramo.Creditos || 0} Créditos</div>
+            `;
+            columnaDiv.appendChild(card);
+        });
+
+        grid.appendChild(columnaDiv);
+    });
+
+    // Actualizar contador de créditos
+    document.getElementById('total-creditos').innerText = creditosTotales;
 }
